@@ -1,0 +1,64 @@
+一、安装wsl环境
+1、开启wsl功能和虚拟机
+
+2、
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+
+3、
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+wsl --set-default Ubuntu-22.04		//设置默认启动项为22.04
+
+4、打开Ubuntu
+注册账号		√ 已完成
+
+5、回到PowerShell
+wsl -list			//查看已安装服务
+wsl -d Ubuntu-22.04	//进入环境，设置默认环境后登录只需 wsl
+hostnamectl		//查看版本
+
+============================================================================
+
+二、安装LLaMafactory
+1、确认是否有GPU驱动
+nvidia-smi
+
+2、拉取代码
+git clone https://github.com/hiyouga/LLaMA-Factory.git
+拉取代码时，若报错“git不是内部命令”，则运行这条：winget install --id Git.Git -e --source winget
+	安装完后需重启PowerShell窗口
+	验证：git --version
+
+3、安装虚拟环境，用阿里镜像
+pip install uv -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
+uv venv finetune
+
+finetune\Scripts\activate
+
+4、
+cd LLaMA-Factory
+uv pip install -e ".[torch,metrics]" -i https://mirrors.aliyun.com/pypi/simple/
+
+5、验证是否安装成功
+llamafactory-cli version
+python -c "import torch; print(torch.cuda.is_available())"
+
+6、之前1.x版本的torch全部不可用，要装2.0以上版本，注意cuda型号
+pip install torch==2.4.0+cu118 torchvision==0.19.0+cu118 torchaudio==2.4.0+cu118 --index-url https://download.pytorch/whl/cu118
+
+安装完成，进行微调
+
+===============================================================================
+
+三、微调
+
+LLaMAFactory只需参数配置即可做到微调
+
+1、启动llmafactory，重新打开PowerShell
+cd D:\1_FineTuning
+finetune\Scripts\activate
+cd LLaMA-Factory
+llamafactory-cli webui
+浏览器自动打开即成功
+
+2、
+
